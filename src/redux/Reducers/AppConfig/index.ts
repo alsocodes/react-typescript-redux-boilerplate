@@ -1,3 +1,4 @@
+import { APP_CONFIG_KEY } from '../../../type.d';
 import { Action, ActionType } from '../../ActionTypes/AppConfig';
 
 export interface CabangData {
@@ -26,10 +27,19 @@ const initialState = {
   toastData: null,
 };
 
+const setCabangSelected = (state: AppConfig, data: CabangData) => {
+  const appConfig = {
+    ...state,
+    cabangSelected: data,
+  };
+  localStorage.setItem(APP_CONFIG_KEY, JSON.stringify(appConfig));
+  return appConfig;
+};
+
 const appConfigReducer = (state: AppConfig = initialState, action: Action): AppConfig => {
   switch (action.type) {
     case ActionType.GET_APP_CONFIG:
-      return action.payload;
+      return action.payload || state;
     case ActionType.SET_TOAST:
       return {
         ...initialState,
@@ -42,10 +52,11 @@ const appConfigReducer = (state: AppConfig = initialState, action: Action): AppC
       };
 
     case ActionType.SET_CABANG_SELECTED:
-      return {
-        ...initialState,
-        cabangSelected: action.payload,
-      };
+      return setCabangSelected(state, action.payload);
+    // return {
+    //   ...initialState,
+    //   cabangSelected: action.payload,
+    // };
     default:
       return state;
   }

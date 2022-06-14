@@ -1,4 +1,5 @@
 import { Dispatch } from 'redux';
+import { cabangs } from '../../../mock-data/list-cabang';
 import { APP_CONFIG_KEY } from '../../../type.d';
 import { ActionType, Action } from '../../ActionTypes/AppConfig';
 import { CabangData, ToastData } from '../../Reducers/AppConfig';
@@ -29,18 +30,22 @@ export const setToast = (data: ToastData | null) => {
   };
 };
 
-export const setListCabang = (data: CabangData[]) => {
-  console.log(data);
+export const fetchListCabang = () => {
   return (dispatch: Dispatch<Action>) => {
+    // use async in function and await in calling api
+    // calling api list cabang
+    // return result as payload dispatch
+
+    // mock data
+    const result = [...cabangs];
     dispatch({
       type: ActionType.SET_LIST_CABANG,
-      payload: data,
+      payload: result,
     });
   };
 };
 
 export const setCabangSelected = (data: CabangData) => {
-  console.log(data);
   return (dispatch: Dispatch<Action>) => {
     dispatch({
       type: ActionType.SET_CABANG_SELECTED,
