@@ -1,6 +1,55 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { useDispatch } from 'react-redux';
+import TextInput from '../../components/TextInput';
+import { setToast } from '../../redux/ActionCreator/AppConfig';
+import { login } from '../../redux/ActionCreator/Auth';
+import { AppDispatch } from '../../redux/store';
+
+const Test = (): JSX.Element => {
+  return <div>Ini cuma test</div>;
+};
+export interface IFromLogin {
+  username: string;
+  password: string;
+}
 
 const Login = (): JSX.Element => {
+  const dispatch = useDispatch<AppDispatch>();
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<IFromLogin>();
+
+  const inputs = [
+    {
+      name: 'username',
+      type: 'text',
+      label: 'What is your username, ',
+      placeholder: 'Username',
+      register: register('username', { required: 'Username harus diisi' }),
+      errors: errors,
+      defaultValue: 'alsocodes',
+    },
+    {
+      name: 'password',
+      type: 'password',
+      label: 'and your password?',
+      placeholder: 'Password',
+      register: register('password', { required: 'Password harus diisi' }),
+      errors: errors,
+      defaultValue: '123456',
+    },
+  ];
+
+  const formSubmit: SubmitHandler<IFromLogin> = (data) => {
+    // console.log(data);
+    // dispatch(setToast({ type: 'error', message: 'Wrong username or password' }));
+    dispatch(login(data));
+  };
+
   return (
     <section className="h-screen">
       <div className="flex xl:justify-center lg:justify-between justify-center items-center flex-wrap h-full g-6">
@@ -15,34 +64,16 @@ const Login = (): JSX.Element => {
         </div>
         <div className="xl:w-5/12 lg:w-5/12 md:w-8/12 w-full lg:h-screen py-10 px-20 bg-primary">
           <div className="items-center justify-center flex w-full h-full flex-grow">
-            <form className="w-full">
+            <form className="w-full" onSubmit={handleSubmit(formSubmit)}>
               <div className="flex flex-row items-center justify-center lg:justify-start mb-2">
                 <p className="text-xl text-black py-2">Sign in</p>
               </div>
+              {/* <input type="text" name="username" {...register('username')} />
+              <input type="text" name="password" {...register('password')} /> */}
 
-              <div className="form-control w-full">
-                <label className="label">
-                  <span className="label-text">What is your username,</span>
-                </label>
-                <input
-                  type="text"
-                  placeholder="Your Username"
-                  className="input input-bordered w-full"
-                />
-                <label className="label"></label>
-              </div>
-
-              <div className="form-control w-full">
-                <label className="label">
-                  <span className="label-text">And password?</span>
-                </label>
-                <input
-                  type="text"
-                  placeholder="Your Password"
-                  className="input input-bordered w-full"
-                />
-                <label className="label"></label>
-              </div>
+              {inputs.map((item) => {
+                return <TextInput key={item.name} {...item} />;
+              })}
 
               <div className="text-center lg:text-right mt-4">
                 <button className="btn btn-primary btn-secondary px-5" type="submit">

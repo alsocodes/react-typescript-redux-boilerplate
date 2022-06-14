@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import Navbar from './components/Navbar/Index';
 import Sidebar from './components/Sidebar/Index';
+import { ToastMessage } from './components/ToastMessage';
 import { useTypedSelector } from './hooks/UseTypeSelector';
 import Login from './pages/Login';
 import Main from './pages/Main';
@@ -45,6 +46,7 @@ const AppRouter = (): JSX.Element => {
           <Sidebar />
         </div>
       )}
+      <ToastMessage />
     </BrowserRouter>
   );
   return (

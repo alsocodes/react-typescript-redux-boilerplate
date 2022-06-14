@@ -32,7 +32,14 @@ const authReducer = (state: State = initialState, action: Action): State => {
         loggedIn: action.payload !== null,
         error: null,
       };
-
+    case ActionType.LOGIN_SUCCESS:
+      return {
+        ...state,
+        loading: true,
+        data: action.payload,
+        loggedIn: action.payload !== null,
+        error: null,
+      };
     default:
       return state;
   }

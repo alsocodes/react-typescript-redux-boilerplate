@@ -30,8 +30,8 @@ const Navbar = (): JSX.Element => {
             aria-label="Homepage"
             className="flex-0 btn btn-sm btn-ghost px-2">
             <div className="font-title text-primary inline-flex text-base transition-all duration-200 md:text-xl">
-              <span className="lowercase">nama</span>{' '}
-              <span className="text-base-content">App</span>
+              <span className="lowercase">Internal</span>{' '}
+              <span className="text-base-content">Memo</span>
             </div>
           </a>{' '}
           <a
