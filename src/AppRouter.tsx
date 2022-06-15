@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { ForwardedRef, HTMLProps, useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import ModalPilihCabang from './components/ModalPilihCabang';
@@ -12,6 +12,28 @@ import { getAppConfig } from './redux/ActionCreator/AppConfig';
 import { checkAuth } from './redux/ActionCreator/Auth';
 import { AppDispatch } from './redux/store';
 import { useHotkeys } from 'react-hotkeys-hook';
+
+// type Props = {
+//   ref: HTMLProps<HTMLDivElement>
+// }
+// const OutsideClick: React.ForwardedRef<Props> = (ref) => {
+//    const [isClicked, setIsClicked] = useState();
+//    useEffect(() => {
+//      function handleClickOutside(event : KeyboardEvent) {
+//        if (ref.current !== null && !ref.current.contains(event.target)) {
+//          setIsClicked(true);
+//        } else {
+//          setIsClicked(false);
+//        }
+//      }
+
+//      document.addEventListener('mousedown', handleClickOutside);
+//      return () => {
+//        document.removeEventListener('mousedown', handleClickOutside);
+//      };
+//    }, [ref]);
+//    return isClicked;
+//  }
 
 const AppRouter = (): JSX.Element => {
   const dispatch = useDispatch<AppDispatch>();
@@ -34,17 +56,16 @@ const AppRouter = (): JSX.Element => {
     setOpenModalPilihCabang(v);
   };
 
-  // console.log(cbRef.current?.value);
-  // useEffect(() => {
-  //   console.log(openModalPilihCabang);
-  // }, [checkb]);
-
-  useHotkeys('alt+s', () => {
-    setCheckedCb(true);
-    // cbRef.current.click();
-    // document.querySelector('body')?.focus();
-    // alert('alt+s');
-  });
+  useHotkeys(
+    'alt+s',
+    (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      console.log('alt+s');
+      setCheckedCb((checkedCb) => !checkedCb);
+    },
+    { enableOnTags: ['TEXTAREA', 'INPUT'] },
+  );
 
   return (
     <BrowserRouter>
@@ -56,21 +77,20 @@ const AppRouter = (): JSX.Element => {
       ) : (
         <div className="drawer">
           <input
-            ref={cbRef}
             id="my-drawer"
             type="checkbox"
             className="drawer-toggle"
-            defaultChecked={checkedCb}
-            onChange={() => setCheckedCb(!checkedCb)}
+            checked={checkedCb}
+            onChange={(e) => setCheckedCb(e.target.checked)}
           />
           <div className="drawer-content">
-            <Navbar setModalCabangOpen={setter} />
+            <Navbar setModalCabangOpen={setter} setCheckedCb={setCheckedCb} />
             <Routes>
               <Route path="/" element={<Main />} />
               <Route path="*" element={<Navigate replace to="/" />} />
             </Routes>
           </div>
-          <Sidebar />
+          <Sidebar isShow={checkedCb} setIsShow={setCheckedCb} />
           <ModalPilihCabang
             open={openModalPilihCabang}
             setOpen={setOpenModalPilihCabang}

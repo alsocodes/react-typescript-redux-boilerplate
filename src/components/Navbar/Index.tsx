@@ -4,32 +4,20 @@ import { useTypedSelector } from '../../hooks/UseTypeSelector';
 
 type Props = {
   setModalCabangOpen(bool: boolean): void;
+  setCheckedCb(boolean: boolean): void;
 };
 
-const Navbar: FC<Props> = ({ setModalCabangOpen }): JSX.Element => {
+const Navbar: FC<Props> = ({ setModalCabangOpen, setCheckedCb }): JSX.Element => {
   const { cabangSelected } = useTypedSelector((state) => state.appConfig);
   const { data } = useTypedSelector((state) => state.auth);
   const toggleBtnSidebar = useRef(null);
-
-  // const [isShow, setIsShow] = useState<boolean>(false);
-  // const showSidebar = () => {
-  //   console.log('trigger');
-  //   // if (toggleBtnSidebar.current) {
-  //   //   toggleBtnSidebar.current.click();
-  //   //   toggleBtnSidebar.current.blur();
-  //   //   setIsShow(true);
-  //   // }
-  // };
-
-  // useHotkeys('alt+s', () => {
-  //   showSidebar();
-  // });
 
   return (
     <div className="navbar bg-base-100 border-b">
       <div className="flex-none">
         <label
-          htmlFor="my-drawer"
+          // htmlFor="my-drawer"
+          onClick={() => setCheckedCb(true)}
           className="btn btn-sm btn-square btn-ghost drawer-button">
           <svg
             xmlns="http://www.w3.org/2000/svg"

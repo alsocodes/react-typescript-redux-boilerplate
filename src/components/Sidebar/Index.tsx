@@ -1,4 +1,8 @@
-import React from 'react';
+import React, { FC, useEffect, useReducer, useRef, useState } from 'react';
+import useKeyPress from './useKeypress';
+import { RouteInterface, routes } from './routes';
+import SidebarItem from './SidebarItem';
+import SidebarRoute from './SidebarRoute';
 
 // const NavItem = ({ url, title, icon: Icon, active, current, chevron, onClick }) => {
 //   const body = (
@@ -111,38 +115,149 @@ import React from 'react';
 //   );
 // };
 
-const Sidebar = (): JSX.Element => {
+type Props = {
+  isShow: boolean;
+  setIsShow(bool: boolean): void;
+};
+
+const Sidebar: FC<Props> = ({ isShow, setIsShow }): JSX.Element => {
+  const initialState = { selectedIndex: -1 };
+  // const bListMenu = [
+  //   'Surat Permohonan',
+  //   'Surat Kuasa',
+  //   'Surat Penawaran',
+  //   'Internal Memo',
+  //   'Surat Peringatan',
+  // ];
+
+  const bListMenu: RouteInterface[] = [...routes];
+  const [listMenu, setListMenu] = useState([...bListMenu]);
+  const reducer = (state: any, action: any) => {
+    switch (action.type) {
+      case 'arrowUp':
+        return {
+          selectedIndex:
+            state.selectedIndex > 0 ? state.selectedIndex - 1 : listMenu.length - 1,
+        };
+      case 'arrowDown':
+        return {
+          selectedIndex:
+            state.selectedIndex < listMenu.length - 1 ? state.selectedIndex + 1 : 0,
+        };
+      case 'select':
+        return { selectedIndex: action.payload };
+      default:
+        throw new Error();
+    }
+  };
+
+  const SidebarArea = useRef(null);
+  const SearchInput = useRef<HTMLInputElement>(null);
+  const arrowUpPressed = useKeyPress('ArrowUp');
+  const arrowDownPressed = useKeyPress('ArrowDown');
+  const escapePressed = useKeyPress('Escape');
+  const enterPressed = useKeyPress('Enter');
+  const [state, dispatch] = useReducer(reducer, initialState);
+
+  useEffect(() => {
+    if (arrowUpPressed && isShow) {
+      dispatch({ type: 'arrowUp' });
+    }
+  }, [arrowUpPressed]);
+
+  useEffect(() => {
+    if (arrowDownPressed && isShow) {
+      dispatch({ type: 'arrowDown' });
+    }
+  }, [arrowDownPressed]);
+
+  useEffect(() => {
+    if (escapePressed && isShow) {
+      setIsShow(false);
+    }
+  }, [escapePressed]);
+
+  useEffect(() => {
+    if (enterPressed && isShow) {
+      console.log('enter');
+    }
+  }, [enterPressed]);
+
+  useEffect(() => {
+    if (isShow) {
+      if (null !== SearchInput.current) SearchInput.current.focus();
+      setInputValue('');
+    }
+  }, [isShow]);
+
+  useEffect(() => {
+    console.log(state);
+  }, [state]);
+
+  const [inputValue, setInputValue] = useState('');
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      // console.log(inputValue, bListMenu);
+      if (inputValue === '') setListMenu([...bListMenu]);
+      else
+        setListMenu(
+          bListMenu.filter((item) =>
+            item.title.toLowerCase().includes(inputValue.toLowerCase()),
+          ),
+        );
+    }, 200);
+
+    return () => clearTimeout(timer);
+  }, [inputValue]);
+
   return (
-    <div className="drawer-side">
+    <div className="drawer-side" ref={SidebarArea}>
       <label htmlFor="my-drawer" className="drawer-overlay"></label>
-      <ul className="menu p-4 overflow-y-auto w-80 bg-base-100 text-base-content">
+      <div className="menu p-4 overflow-y-auto w-80 bg-base-100 text-base-content">
         <div className="form-control">
           <input
+            ref={SearchInput}
+            autoFocus
             type="text"
             placeholder="Pencarian ..."
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
             className="input w-full max-w-xs input-sm"
           />
         </div>
         <hr className="mb-4 mt-4" />
+        {/* <ul className=""> */}
         <li className="menu-title">
-          <span>Category</span>
+          <span>Menu</span>
         </li>
-        <li>
-          <a>Item 1</a>
-        </li>
-        <li>
-          <a>Item 2</a>
-        </li>
-        <li className="menu-title">
-          <span>Category</span>
-        </li>
-        <li>
-          <a>Item 1</a>
-        </li>
-        <li>
-          <a>Item 2</a>
-        </li>
-      </ul>
+        {listMenu.map((item: RouteInterface, i: number): JSX.Element => {
+          // return (
+          //   <SidebarRoute
+          //     key={`route-${i}`}
+          //     route={item}
+          //     setTogleMenu={setTogleMenu}
+          //     accesses={accesses}
+          //     collapse={collapse}
+          //     setCollapse={onCollapse}
+          //   />
+          // );
+          const { title, icon, path } = item;
+          return (
+            <li
+              key={title}
+              onClick={() => {
+                dispatch({ type: 'select', payload: i });
+              }}
+              className={`${i === state.selectedIndex && 'bg-gray-300'}`}
+              role="button"
+              aria-pressed={i === state.selectedIndex}
+              tabIndex={0}>
+              <a>{title}</a>
+            </li>
+          );
+        })}
+        {/* </ul> */}
+      </div>
     </div>
   );
 };
