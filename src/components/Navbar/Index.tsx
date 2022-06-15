@@ -1,4 +1,4 @@
-import React, { FC, useRef } from 'react';
+import React, { FC } from 'react';
 import { IoLocation } from 'react-icons/io5';
 import { useTypedSelector } from '../../hooks/UseTypeSelector';
 
@@ -10,7 +10,6 @@ type Props = {
 const Navbar: FC<Props> = ({ setModalCabangOpen, setCheckedCb }): JSX.Element => {
   const { cabangSelected } = useTypedSelector((state) => state.appConfig);
   const { data } = useTypedSelector((state) => state.auth);
-  const toggleBtnSidebar = useRef(null);
 
   return (
     <div className="navbar bg-base-100 border-b">
@@ -41,8 +40,8 @@ const Navbar: FC<Props> = ({ setModalCabangOpen, setCheckedCb }): JSX.Element =>
             aria-label="Homepage"
             className="flex-0 btn btn-sm btn-ghost px-2">
             <div className="font-title text-primary inline-flex text-base transition-all duration-200 md:text-xl">
-              <span className="lowercase">Internal</span>{' '}
-              <span className="text-base-content">Memo</span>
+              {/* <span className="lowercase">Internal</span>{' '} */}
+              <span className="text-base-content">Internal Memo</span>
             </div>
           </a>{' '}
           <a

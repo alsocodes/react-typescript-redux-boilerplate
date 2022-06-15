@@ -3,146 +3,38 @@ import useKeyPress from './useKeypress';
 import { RouteInterface, routes } from './routes';
 import SidebarItem from './SidebarItem';
 import SidebarRoute from './SidebarRoute';
-
-// const NavItem = ({ url, title, icon: Icon, active, current, chevron, onClick }) => {
-//   const body = (
-//     <div
-//       className={`flex px-6 h-12 items-center text-sm ${styles.navItem} cursor-pointer`}
-//       style={{
-//         backgroundColor: current ? '#ffecab' : 'transparent',
-//         opacity: active || current ? 1.0 : 0.5,
-//         transition: 'all 0.2s linear',
-//       }}
-//       onClick={onClick}>
-//       <span className="w-10">{Icon && <Icon fontSize={24} />}</span>
-//       <span className="flex-1">{title}</span>
-//       {chevron != null &&
-//         (chevron === true ? (
-//           <IoChevronUp fontSize={18} />
-//         ) : (
-//           <IoChevronDown fontSize={18} />
-//         ))}
-//     </div>
-//   );
-
-//   return url != null ? <Link to={url}>{body}</Link> : body;
-// };
-
-// const NavGroup = ({
-//   title,
-//   icon,
-//   children,
-//   active,
-//   setTogleMenu,
-//   isCollapsed,
-//   setCollapse,
-// }) => {
-//   const childrenRef = useRef();
-
-//   return (
-//     <>
-//       <NavItem
-//         title={title}
-//         icon={icon}
-//         chevron={isCollapsed}
-//         onClick={() => setCollapse(title)}
-//         active={active}
-//       />
-//       <div
-//         className="overflow-hidden"
-//         style={{
-//           transition: 'all 0.5s',
-//           opacity: isCollapsed ? 1.0 : 0,
-//           maxHeight: isCollapsed ? childrenRef.current?.clientHeight : 0,
-//         }}>
-//         <div ref={childrenRef} onClick={() => setTogleMenu(false)}>
-//           {children}
-//         </div>
-//       </div>
-//     </>
-//   );
-// };
-
-// const NavRoute = ({ accesses, route, setTogleMenu, collapse, setCollapse }) => {
-//   const { pathname } = useLocation();
-
-//   if (!accesses?.includes(route.access)) {
-//     return null;
-//   }
-
-//   if (!route.childs) {
-//     return (
-//       <NavItem
-//         title={route.title}
-//         icon={route.icon}
-//         url={route.path}
-//         current={pathname === route.path}
-//         onClick={() => {
-//           setTogleMenu(false);
-//           setCollapse(route.title);
-//         }}
-//       />
-//     );
-//   }
-
-//   const isCollapsed = collapse === route.title;
-//   const isActive = isCollapsed || pathname.startsWith(route.path);
-
-//   return (
-//     <NavGroup
-//       title={route.title}
-//       icon={route.icon}
-//       setTogleMenu={setTogleMenu}
-//       active={isActive}
-//       isCollapsed={isCollapsed}
-//       setCollapse={setCollapse}>
-//       {route.childs.map((item, idx) => {
-//         if (item.access && !accesses?.includes(item.access)) {
-//           return null;
-//         }
-
-//         return (
-//           <NavItem
-//             key={`route-${route.title}-${idx}`}
-//             title={item.title}
-//             url={route.path + item.path}
-//             active={isActive}
-//             current={pathname === route.path + item.path}
-//           />
-//         );
-//       })}
-//     </NavGroup>
-//   );
-// };
+import { accesses } from '../../mock-data/list-access';
+import { useNavigate } from 'react-router-dom';
 
 type Props = {
   isShow: boolean;
   setIsShow(bool: boolean): void;
 };
 
+const initialState = { selectedIndex: -1 };
 const Sidebar: FC<Props> = ({ isShow, setIsShow }): JSX.Element => {
-  const initialState = { selectedIndex: -1 };
-  // const bListMenu = [
-  //   'Surat Permohonan',
-  //   'Surat Kuasa',
-  //   'Surat Penawaran',
-  //   'Internal Memo',
-  //   'Surat Peringatan',
-  // ];
-
   const bListMenu: RouteInterface[] = [...routes];
   const [listMenu, setListMenu] = useState([...bListMenu]);
+  const navigate = useNavigate();
+
   const reducer = (state: any, action: any) => {
+    // console.log('isLabel', isLabel, action.type);
     switch (action.type) {
       case 'arrowUp':
         return {
           selectedIndex:
-            state.selectedIndex > 0 ? state.selectedIndex - 1 : listMenu.length - 1,
+            state.selectedIndex > 0
+              ? state.selectedIndex -
+                (listMenu[state.selectedIndex - 1]?.name === 'label' ? 2 : 1)
+              : listMenu.length - 1,
         };
       case 'arrowDown':
         return {
           selectedIndex:
-            state.selectedIndex < listMenu.length - 1 ? state.selectedIndex + 1 : 0,
+            state.selectedIndex < listMenu.length - 1
+              ? state.selectedIndex +
+                (listMenu[state.selectedIndex + 1]?.name === 'label' ? 2 : 1)
+              : 0,
         };
       case 'select':
         return { selectedIndex: action.payload };
@@ -179,7 +71,10 @@ const Sidebar: FC<Props> = ({ isShow, setIsShow }): JSX.Element => {
 
   useEffect(() => {
     if (enterPressed && isShow) {
-      console.log('enter');
+      // console.log('enter');
+      const route: RouteInterface = listMenu[state.selectedIndex];
+      navigate(route.path, { replace: true });
+      setIsShow(false);
     }
   }, [enterPressed]);
 
@@ -191,7 +86,7 @@ const Sidebar: FC<Props> = ({ isShow, setIsShow }): JSX.Element => {
   }, [isShow]);
 
   useEffect(() => {
-    console.log(state);
+    // console.log(state);
   }, [state]);
 
   const [inputValue, setInputValue] = useState('');
@@ -210,10 +105,16 @@ const Sidebar: FC<Props> = ({ isShow, setIsShow }): JSX.Element => {
     return () => clearTimeout(timer);
   }, [inputValue]);
 
+  const [collapse, setCollapse] = useState('');
+
+  const onCollapse = (menu: string) => {
+    setCollapse(collapse === menu ? '' : menu);
+  };
+
   return (
     <div className="drawer-side" ref={SidebarArea}>
       <label htmlFor="my-drawer" className="drawer-overlay"></label>
-      <div className="menu p-4 overflow-y-auto w-80 bg-base-100 text-base-content">
+      <div className="menu p-4 overflow-y-hidden h-screen w-80 bg-base-100 text-base-content">
         <div className="form-control">
           <input
             ref={SearchInput}
@@ -227,20 +128,19 @@ const Sidebar: FC<Props> = ({ isShow, setIsShow }): JSX.Element => {
         </div>
         <hr className="mb-4 mt-4" />
         {/* <ul className=""> */}
-        <li className="menu-title">
-          <span>Menu</span>
-        </li>
+
         {listMenu.map((item: RouteInterface, i: number): JSX.Element => {
-          // return (
-          //   <SidebarRoute
-          //     key={`route-${i}`}
-          //     route={item}
-          //     setTogleMenu={setTogleMenu}
-          //     accesses={accesses}
-          //     collapse={collapse}
-          //     setCollapse={onCollapse}
-          //   />
-          // );
+          return (
+            <SidebarRoute
+              key={`route-${i}`}
+              route={item}
+              accesses={accesses}
+              collapse={collapse}
+              selected={listMenu[state.selectedIndex]?.name}
+              setCollapse={onCollapse}
+              showSidebar={setIsShow}
+            />
+          );
           const { title, icon, path } = item;
           return (
             <li

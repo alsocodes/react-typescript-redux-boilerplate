@@ -2,22 +2,18 @@ import { Dispatch } from 'redux';
 import { IFromLogin } from '../../../pages/Login';
 import { APP_LIST_CABANG, AUTH_KEY } from '../../../type.d';
 import { ActionType, Action } from '../../ActionTypes/Auth';
-import {
-  ActionType as ActionType2,
-  Action as Action2,
-} from '../../ActionTypes/AppConfig';
 import { Auth } from '../../Reducers/Auth';
 
+// const authData = {
+//   id: '0001',
+//   name: 'also',
+//   email: 'also@gmail.com',
+// };
 export const checkAuth = () => {
-  return (dispatch: Dispatch<Action>) => {
+  return async (dispatch: Dispatch<Action>): Promise<void> => {
     try {
       const storage = localStorage.getItem(AUTH_KEY);
       const authData = storage ? JSON.parse(storage) : null;
-      // const authData = {
-      //   id: '0001',
-      //   name: 'also',
-      //   email: 'also@gmail.com',
-      // };
       dispatch({
         type: ActionType.GET_AUTH,
         payload: authData,

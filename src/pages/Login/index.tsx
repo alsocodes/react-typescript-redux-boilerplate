@@ -1,7 +1,9 @@
 import React, { useEffect } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import TextInput from '../../components/TextInput';
+import { useTypedSelector } from '../../hooks/UseTypeSelector';
 import { setToast } from '../../redux/ActionCreator/AppConfig';
 import { login } from '../../redux/ActionCreator/Auth';
 import { AppDispatch } from '../../redux/store';
@@ -16,6 +18,10 @@ export interface IFromLogin {
 
 const Login = (): JSX.Element => {
   const dispatch = useDispatch<AppDispatch>();
+  // const { loggedIn } = useTypedSelector((state) => state.auth);
+
+  console.log('i am here');
+
   const {
     register,
     handleSubmit,

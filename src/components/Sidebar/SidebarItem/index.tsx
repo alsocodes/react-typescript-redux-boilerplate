@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import { IconType } from 'react-icons';
 import { IoChevronDown, IoChevronUp } from 'react-icons/io5';
 import { Link } from 'react-router-dom';
-import styles from './Sidebar.module.css';
+import styles from './SidebarItem.module.css';
 
 type Props = {
   url?: string;
@@ -12,6 +12,8 @@ type Props = {
   current?: boolean;
   chevron?: boolean;
   onClick?(): void;
+  selected?: string;
+  name: string;
 };
 const SidebarItem: FC<Props> = ({
   url,
@@ -21,13 +23,17 @@ const SidebarItem: FC<Props> = ({
   current,
   chevron,
   onClick,
+  selected,
+  name,
 }) => {
+  // console.log(name, active, current);
+  const isSelected = selected === name;
+  const bgColor =
+    active || current ? 'bg-primary hover:bg-primary' : isSelected ? 'bg-gray-200' : '';
   const body = (
     <div
-      className={`flex px-6 h-12 items-center text-sm ${styles.navItem} cursor-pointer`}
+      className={`flex px-6 h-10 items-center text-sm cursor-pointer rounded-md ${bgColor} hover:bg-gray-200`}
       style={{
-        backgroundColor: current ? '#ffecab' : 'transparent',
-        opacity: active || current ? 1.0 : 0.5,
         transition: 'all 0.2s linear',
       }}
       onClick={onClick}>

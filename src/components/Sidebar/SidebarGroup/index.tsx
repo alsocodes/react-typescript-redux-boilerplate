@@ -8,9 +8,10 @@ type Props = {
   icon: IconType;
   // children?: JSX.Element | JSX.Element[] | null;
   active: boolean;
-  setTogleMenu(boolean: boolean): void;
+  setTogleMenu?(boolean: boolean): void;
   isCollapsed: boolean;
   setCollapse(string: string): void;
+  name: string;
 };
 
 const SidebarGroup: FC<Props> = ({
@@ -21,18 +22,21 @@ const SidebarGroup: FC<Props> = ({
   setTogleMenu,
   isCollapsed,
   setCollapse,
+  name,
 }) => {
   const childrenRef = useRef<HTMLDivElement>(null);
 
   return (
     <>
       <SidebarItem
+        name={name}
         title={title}
         icon={icon}
         chevron={isCollapsed}
         onClick={() => setCollapse(title)}
         active={active}
       />
+
       <div
         className="overflow-hidden"
         style={{
@@ -44,9 +48,7 @@ const SidebarGroup: FC<Props> = ({
               : 0
             : 0,
         }}>
-        <div ref={childrenRef} onClick={() => setTogleMenu(false)}>
-          {children}
-        </div>
+        <div ref={childrenRef}>{children}</div>
       </div>
     </>
   );

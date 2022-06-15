@@ -1,5 +1,6 @@
 import React from 'react';
 import { IoCalendarOutline } from 'react-icons/io5';
+import { useNavigate } from 'react-router-dom';
 
 const CardSurat = (): JSX.Element => {
   return (
@@ -21,10 +22,17 @@ const CardSurat = (): JSX.Element => {
 };
 
 const Main = (): JSX.Element => {
+  const navigate = useNavigate();
+  const gocabang = () => {
+    navigate('/master/cabang', { replace: false, state: { data: 'satu' } });
+  };
   return (
     <div className="p-4">
       <div className="flex gap-4">
         <div className="sm:w-full md:w-1/5 px-2">
+          <button className="btn btn-sm btn-primary" onClick={() => gocabang()}>
+            ke cabang
+          </button>
           <h5 className="text-md font-semibold mb-2">Notifikasi</h5>
           <div className="box-scrolling pr-2" style={{ height: 'calc(100vh - 100px)' }}>
             <div className="card card-compact w-full bg-gray-100 shadow-md cursor-pointer hover:bg-gray-300 mb-6">

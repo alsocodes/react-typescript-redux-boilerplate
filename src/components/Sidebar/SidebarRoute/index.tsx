@@ -7,9 +7,11 @@ import SidebarItem from '../SidebarItem';
 type Props = {
   accesses: string[];
   route: RouteInterface;
-  setTogleMenu(boolean: boolean): void;
+  setTogleMenu?(boolean: boolean): void;
   collapse: string;
   setCollapse(string: string): void;
+  selected?: string;
+  showSidebar(boolean: boolean): void;
 };
 const SidebarRoute: FC<Props> = ({
   accesses,
@@ -17,8 +19,18 @@ const SidebarRoute: FC<Props> = ({
   setTogleMenu,
   collapse,
   setCollapse,
+  selected,
+  showSidebar,
 }): JSX.Element | null => {
   const { pathname } = useLocation();
+
+  if (route.name === 'label') {
+    return (
+      <li className="menu-title mt-2">
+        <span>{route.title}</span>
+      </li>
+    );
+  }
 
   if (!accesses?.includes(route.access)) {
     return null;
@@ -27,12 +39,15 @@ const SidebarRoute: FC<Props> = ({
   if (!route.childs) {
     return (
       <SidebarItem
+        name={route.name}
         title={route.title}
         icon={route.icon}
         url={route.path}
         current={pathname === route.path}
+        selected={selected}
         onClick={() => {
-          setTogleMenu(false);
+          // setTogleMenu(false);
+          showSidebar(false);
           setCollapse(route.title);
         }}
       />
@@ -44,9 +59,10 @@ const SidebarRoute: FC<Props> = ({
 
   return (
     <SidebarGroup
+      name={route.name}
       title={route.title}
       icon={route.icon}
-      setTogleMenu={setTogleMenu}
+      // setTogleMenu={setTogleMenu}
       active={isActive}
       isCollapsed={isCollapsed}
       setCollapse={setCollapse}>
@@ -57,10 +73,12 @@ const SidebarRoute: FC<Props> = ({
 
         return (
           <SidebarItem
+            name={route.name}
             key={`route-${route.title}-${idx}`}
             title={item.title}
             url={route.path + item.path}
             active={isActive}
+            selected={selected}
             current={pathname === route.path + item.path}
           />
         );

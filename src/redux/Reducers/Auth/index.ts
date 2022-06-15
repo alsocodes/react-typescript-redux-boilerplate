@@ -25,9 +25,10 @@ const initialState = {
 const authReducer = (state: State = initialState, action: Action): State => {
   switch (action.type) {
     case ActionType.GET_AUTH:
+      console.log('yyyii');
       return {
         ...state,
-        loading: true,
+        persisting: false,
         data: action.payload,
         loggedIn: action.payload !== null,
         error: null,
