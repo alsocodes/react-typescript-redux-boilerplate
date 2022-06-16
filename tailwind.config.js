@@ -11,7 +11,7 @@ module.exports = {
   },
   plugins: [require(daisyui)],
   daisyui: {
-    themes: ['emerald'],
+    themes: ['corporate'],
     styled: true,
     // themes: true,
     base: true,

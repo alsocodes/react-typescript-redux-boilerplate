@@ -4,6 +4,7 @@ import { IconType } from 'react-icons';
 import Main from '../../pages/Main';
 import Surat from '../../pages/Surat';
 import MasterCabang from '../../pages/Master/Cabang';
+import Test from '../../pages/Test';
 
 export interface RouteInterface {
   name: string;
@@ -24,6 +25,14 @@ export const routes: RouteInterface[] = [
     element: <Main />,
     access: 'client_dashboard',
     path: '/',
+    icon: IoHomeOutline,
+  },
+  {
+    name: 'test',
+    title: 'Test Board',
+    element: <Test />,
+    access: 'test_board',
+    path: '/test',
     icon: IoHomeOutline,
   },
   {

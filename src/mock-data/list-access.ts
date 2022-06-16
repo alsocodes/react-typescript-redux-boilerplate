@@ -9,4 +9,5 @@ export const accesses = [
   'master_user',
   'master_access',
   'master_cabang',
+  'test_board',
 ];

@@ -1,6 +1,7 @@
 import React from 'react';
 import { IoSearch, IoCalendar } from 'react-icons/io5';
 import { tableDummies } from '../../mock-data/list-table-dummy';
+import DataGrid from './DataGrid';
 
 const Surat = (): JSX.Element => {
   return (
@@ -53,7 +54,7 @@ const Surat = (): JSX.Element => {
                   </div>
                 </div>
               </div>
-              <TableData />
+              <DataGrid />
             </div>
           </div>
         </div>
@@ -83,9 +84,15 @@ export const TableData = () => {
           {tableDummies?.map((item, i) => {
             return (
               <tr key={`row-${i}`} className="hover cursor-pointer">
-                <td style={{width:"50%"}}><div className="td-truncate">{item[0]}</div></td>
-                <td style={{width:"40%"}}><div className="td-truncate">{item[1]}</div></td>
-                <td width={'20px'}><div className="td-truncate">{item[2]}</div></td>
+                <td style={{ width: '50%' }}>
+                  <div className="td-truncate">{item[0]}</div>
+                </td>
+                <td style={{ width: '40%' }}>
+                  <div className="td-truncate">{item[1]}</div>
+                </td>
+                <td width={'20px'}>
+                  <div className="td-truncate">{item[2]}</div>
+                </td>
               </tr>
             );
           })}

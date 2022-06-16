@@ -1,0 +1,4 @@
+.datagrid-compact-row,
+.datagrid-compact-row > div {
+  height: 20px !important;
+}
