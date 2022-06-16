@@ -52,6 +52,9 @@ const Sidebar: FC<Props> = ({ isShow, setIsShow }): JSX.Element => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
+    // console.log(isShow);
+  }, [isShow]);
+  useEffect(() => {
     if (arrowUpPressed && isShow) {
       dispatch({ type: 'arrowUp' });
     }
