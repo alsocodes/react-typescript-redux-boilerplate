@@ -12,6 +12,7 @@ type Props = {
 const CustomScrollbar: FC<Props> = ({ children, className, ...restProps }) => {
   const [hovering, setHovering] = useState(false);
   const [scrollBoxHeight, setScrollBoxHeight] = useState(SCROLL_BOX_MIN_HEIGHT);
+  const [isOverflow, setIsOverflow] = useState(false);
   const [scrollBoxTop, setScrollBoxTop] = useState(0);
   const [lastScrollThumbPosition, setScrollThumbPosition] = useState(0);
   const [isDragging, setDragging] = useState(false);
@@ -46,8 +47,8 @@ const CustomScrollbar: FC<Props> = ({ children, className, ...restProps }) => {
         const scrollHostElement = scrollHostRef.current;
         const { scrollHeight, offsetHeight } = scrollHostElement;
 
-        let deltaY = e.clientY - lastScrollThumbPosition;
-        let percentage = deltaY * (scrollHeight / offsetHeight);
+        const deltaY = e.clientY - lastScrollThumbPosition;
+        const percentage = deltaY * (scrollHeight / offsetHeight);
 
         setScrollThumbPosition(e.clientY);
         setScrollBoxTop(
@@ -102,7 +103,9 @@ const CustomScrollbar: FC<Props> = ({ children, className, ...restProps }) => {
       scrollThumbPercentage * clientHeight,
       SCROLL_BOX_MIN_HEIGHT,
     );
+    // console.log('XSS', scrollThumbHeight, clientHeight, scrollHeight);
     setScrollBoxHeight(scrollThumbHeight);
+    if (scrollThumbHeight < clientHeight) setIsOverflow(true);
     scrollHostElement.addEventListener('scroll', handleScroll, true);
     return function cleanup() {
       scrollHostElement.removeEventListener('scroll', handleScroll, true);
@@ -135,6 +138,7 @@ const CustomScrollbar: FC<Props> = ({ children, className, ...restProps }) => {
           style={{ height: scrollBoxHeight, top: scrollBoxTop }}
           onMouseDown={handleScrollThumbMouseDown}
         />
+        {/* </div> */}
       </div>
     </div>
   );

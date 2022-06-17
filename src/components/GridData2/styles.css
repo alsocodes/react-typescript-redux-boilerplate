@@ -1,0 +1,104 @@
+/* .grid-data {
+  table-layout: fixed;
+  height: 100%;
+  position: relative;
+}
+
+.grid-data td,
+.grid-data th {
+  border: 1px solid #f00;
+}
+
+.grid-data thead tr,
+.grid-data tfoot tr {
+  display: block;
+}
+
+.grid-data tr {
+  width: 100%;
+}
+.grid-data tbody {
+  display: block;
+  width: 100%;
+  height: calc(100% - 50px);
+} */
+
+/* .scroll-thumb {
+  position: absolute;
+  height: 80%;
+  width: 10px;
+  background-color: #00f;
+  top: 30px;
+  right: 5px;
+  left: auto;
+} */
+
+.dg {
+  /* border: 1px solid #0f0; */
+  height: calc(100%);
+  overflow: hidden;
+}
+.dg-head,
+.dg-body {
+  width: 100%;
+}
+
+.dg-body {
+  height: calc(100% - 64px);
+}
+.dg-header-row,
+.dg-body-row {
+  position: relative;
+  width: 100%;
+  display: block;
+  overflow: hidden;
+}
+
+.dg-header-row {
+  height: 30px;
+  line-height: 30px;
+}
+.dg-body-row {
+  height: 22px;
+  line-height: 22px;
+}
+
+.dg-header-col,
+.dg-body-col {
+  position: absolute;
+  border-collapse: collapse;
+  box-sizing: border-box;
+  height: 100%;
+  /* border: 1px solid #f00; */
+}
+
+.input-number {
+  width: 50px;
+  height: 26px;
+  border-radius: 2px;
+}
+
+.input-number:focus {
+  outline: unset;
+}
+
+.dg-paging {
+  /* background-color: #f00; */
+}
+.dg-paging .btn {
+  border-radius: 2px !important;
+  width: 32px;
+  height: 26px;
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+.panging-text-info {
+  line-height: 26px;
+  user-select: none;
+}
+
+.paging-select {
+  height: 26px;
+  width: 60px;
+}

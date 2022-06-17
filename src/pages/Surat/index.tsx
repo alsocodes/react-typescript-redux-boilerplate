@@ -1,126 +1,138 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { IoSearch, IoCalendar } from 'react-icons/io5';
 import { listKaryawan } from '../../mock-data/list-karyawan-dummy';
 import { tableDummies } from '../../mock-data/list-table-dummy';
 import GridData from '../../components/GridData';
 import CustomScrollbar from '../../components/CustomScrollbar';
+import GridData2 from '../../components/GridData2';
 
 const Surat = (): JSX.Element => {
-  const [listData, setListData] = useState([...listKaryawan]);
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(10);
+  const [skip, setSkip] = useState(0);
+
+  const [totalData, setTotalData] = useState(listKaryawan.length);
+  const [listData, setListData] = useState([]);
+  const [searchValue, setSearchValue] = useState('');
+
+  useEffect(() => {
+    setSkip((page - 1) * perPage);
+  }, [page, perPage]);
+
+  useEffect(() => {
+    // disini adalah mock search data. nanti fetch ke api
+    const filterOrSearched = listKaryawan.filter((item: any, i: number) => {
+      if (!item.name.toLowerCase().includes(searchValue) && searchValue !== '')
+        return false;
+      return true;
+    }, []);
+
+    setTotalData(filterOrSearched.length);
+
+    setListData(
+      filterOrSearched.filter((item: any, i: number) => {
+        if (!item.name.toLowerCase().includes(searchValue) && searchValue !== '')
+          return false;
+        if (i < skip && i >= skip + perPage) return false;
+        // i >= skip && i < skip + perPage
+
+        return true;
+      }),
+    );
+  }, [skip, perPage, searchValue]);
+
+  useEffect(() => {
+    // console.log('listData', listData);
+  }, [listData]);
+
   const cols: any = [
-    { name: 'no', label: 'No', width: 50 },
+    {
+      name: 'no',
+      label: 'No',
+      width: 50,
+      render: (item: any, i: number) => {
+        return skip + i + 1;
+      },
+    },
+    { name: 'id', label: 'UserID', width: 90 },
     { name: 'name', label: 'Nama' },
     { name: 'address', label: 'Alamat' },
   ];
+
+  const [searchInput, setSearchInput] = useState(searchValue);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setPage(1);
+      setSearchValue(searchInput);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchInput]);
+
   return (
     <div className="p-4">
       <div className="flex">
-        <div className="w-8/12" style={{ height: 'calc(100vh -100px)' }}>
-          <div className="h-4/6 px-2 pt-2 w-full">
+        <div className="w-8/12 relative" style={{ height: 'calc(100vh -100px)' }}>
+          <div className="form-area h-4/6 px-2 pt-2 w-full">
             <div className="h-full w-full border border-green-500">a</div>
           </div>
-          <div className="h-2/6 px-2 pt-2 w-full">
+          <div className="data-area h-2/6 px-2 pt-2 w-full">
             <div className="w-full h-full border bg-gray-100 border-gray-300 p-2 rounded-md">
-              <div className="flex gap-8 mb-2">
-                <div className="w-1/4">
+              <div className="flex gap-2 mb-2">
+                <div className="w-4/12">
                   <div className="form-control w-full">
                     <div className="relative">
                       <IoSearch className="absolute z-10 ml-2 my-3 -top-1" />
                       <input
+                        value={searchInput}
+                        onChange={(e) => setSearchInput(e.target.value)}
                         type="text"
                         placeholder="Pencarian"
-                        className="input w-full input-sm pl-8"
+                        className="input w-full input-sm pl-8 border border-gray-300"
                       />
                     </div>
                   </div>
                 </div>
-                <div className="w-1/4">
+                <div className="w-4/12">
                   <div className="w-full flex gap-2 items-center">
-                    <div>
-                      <IoCalendar />
-                    </div>
-                    <div className="form-control">
+                    <div className="form-control w-2/4">
                       <input
+                        name="date_start"
                         type="date"
                         placeholder="DD/MM/YYYY"
-                        className="input w-full input-sm"
+                        className="input w-full input-sm border border-gray-300"
                       />
                     </div>
                     <div>-</div>
-                    <div className="form-control">
+                    <div className="form-control w-2/4">
                       <input
+                        name="date_end"
                         type="date"
                         placeholder="DD/MM/YYYY"
-                        className="input w-full input-sm"
+                        className="input w-full input-sm border border-gray-300"
                       />
                     </div>
                   </div>
                 </div>
-                <div className="w-2/4">
+                <div className="w-4/12">
                   <div className="flex justify-end">
                     <button className="btn btn-primary btn-sm">Tambah</button>
                   </div>
                 </div>
               </div>
-              <div className="overflow-hidden" style={{ height: 'calc(100% - 40px)' }}>
-                <GridData data={listData} cols={cols} />
-                {/* <CustomScrollbar>
-                  <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus
-                    tortor neque, vehicula sit amet odio quis, dictum tristique lorem.
-                    Phasellus mattis, nibh in volutpat consequat, diam lectus tristique
-                    purus, vitae mattis enim metus sed nulla. Sed et risus blandit,
-                    posuere arcu eu, bibendum eros. In hac habitasse platea dictumst.
-                    Vestibulum id elementum mi, ac bibendum ipsum. Phasellus venenatis
-                    enim nec arcu ullamcorper, eu vulputate augue imperdiet. Nulla
-                    sagittis egestas mi non mollis. Aenean dapibus in nulla eu elementum.
-                    Nam non nisl malesuada, suscipit massa euismod, pretium ligula. Nulla
-                    in porta nisi.
-                  </p>
-                  <p>
-                    Fusce sit amet nisi ultricies, varius magna semper, semper mi. Ut
-                    faucibus, dolor non rutrum dictum, ipsum urna aliquam augue, non
-                    egestas odio mi vitae purus. Etiam volutpat ut magna ut tristique.
-                    Vivamus a tempor ex, eu egestas lorem. Nullam pulvinar, sem sit amet
-                    scelerisque porttitor, metus elit eleifend libero, vel tincidunt nibh
-                    nisi sed eros. Ut quis quam ut nulla commodo commodo. Morbi ac felis
-                    id ligula maximus iaculis. Nunc malesuada placerat purus eget
-                    consequat.
-                  </p>
-                  <p>
-                    In hac habitasse platea dictumst. Quisque ullamcorper turpis ultrices
-                    posuere feugiat. Etiam vehicula orci ac ipsum tincidunt, non ornare
-                    leo tristique. Nullam eleifend massa mollis elit consectetur
-                    fermentum. In congue efficitur odio, nec imperdiet elit volutpat sed.
-                    Mauris congue ut mauris non semper. Duis ultrices elit mauris, eu
-                    mollis lacus ullamcorper et. Donec vel libero enim. Sed placerat felis
-                    lectus, sit amet posuere libero laoreet sed. Integer vitae luctus
-                    magna. Phasellus et diam ipsum. Vestibulum tempor dictum ante, quis
-                    varius dolor mattis non. Aliquam tempus, dolor dignissim posuere
-                    tincidunt, leo massa pulvinar velit, nec sollicitudin arcu arcu ac
-                    nulla. Aenean ipsum felis, iaculis vel libero ac, tincidunt molestie
-                    elit. Aliquam eu nunc nunc. Integer at ante a erat tincidunt
-                    imperdiet. Morbi augue magna, fermentum id posuere ultrices, venenatis
-                    a tortor. Donec vel erat quis nisi vehicula cursus. Lorem ipsum dolor
-                    sit amet, consectetur adipiscing elit. Aliquam imperdiet lacinia nibh,
-                    ut semper erat vulputate sed. Phasellus mauris felis, ornare sit amet
-                    aliquam nec, maximus nec velit. Donec vel mollis magna, id feugiat
-                    leo. Nulla interdum interdum est, a maximus dui blandit in. Maecenas
-                    et lacus ac justo placerat imperdiet. Cras sit amet sapien ac mi
-                    faucibus dignissim id eu libero. Donec porttitor interdum dui quis
-                    iaculis. Quisque odio massa, rhoncus sit amet nisl luctus, dictum
-                    finibus velit. Sed eu est ac nunc luctus viverra. Nunc placerat
-                    scelerisque hendrerit. Sed malesuada mauris orci, convallis gravida
-                    felis tempus ut. Sed porttitor risus vel ligula volutpat egestas
-                    dictum ut lectus. Cras mattis posuere tellus, egestas egestas orci
-                    accumsan et. Sed varius, risus eleifend scelerisque lobortis, ante
-                    ligula rutrum tellus, a fermentum libero nulla id nisl. Nulla eros
-                    elit, convallis in justo quis, fermentum molestie leo. Pellentesque
-                    pulvinar tortor sit amet gravida euismod. Etiam id scelerisque ligula.
-                    Donec eu dui at leo placerat facilisis quis quis dui. Donec aliquam
-                    lacinia lacus, vitae dictum velit vulputate eu.
-                  </p>
-                </CustomScrollbar> */}
+              <div
+                className="overflow-hidden text-sm border-0 border-purple-900"
+                style={{ height: 'calc(100% - 40px)' }}>
+                <GridData2
+                  data={listData}
+                  cols={cols}
+                  page={page}
+                  perPage={perPage}
+                  skip={skip}
+                  totalData={totalData}
+                  setPage={setPage}
+                  setPerPage={setPerPage}
+                />
               </div>
             </div>
           </div>
@@ -132,39 +144,6 @@ const Surat = (): JSX.Element => {
           </div>
         </div>
       </div>
-    </div>
-  );
-};
-
-export const TableData = () => {
-  return (
-    <div className="w-full border">
-      <table className="table-auto-sm w-full">
-        <thead>
-          <tr>
-            <th>Judul</th>
-            <th>Keterangan</th>
-            <th>Jumlah</th>
-          </tr>
-        </thead>
-        <tbody className="w-full">
-          {tableDummies?.map((item, i) => {
-            return (
-              <tr key={`row-${i}`} className="hover cursor-pointer">
-                <td style={{ width: '50%' }}>
-                  <div className="td-truncate">{item[0]}</div>
-                </td>
-                <td style={{ width: '40%' }}>
-                  <div className="td-truncate">{item[1]}</div>
-                </td>
-                <td width={'20px'}>
-                  <div className="td-truncate">{item[2]}</div>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
     </div>
   );
 };

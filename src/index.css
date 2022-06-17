@@ -100,3 +100,15 @@ code {
 .table-auto-sm tbody td {
   padding: 0.2rem 0.5rem;
 }
+
+.form-area {
+  max-height: calc(100% - 220px);
+}
+.data-area {
+  min-height: 220px;
+  position: absolute;
+  /* border: 1px solid #f00; */
+  bottom: 2px;
+  left: 0;
+  right: 0;
+}
