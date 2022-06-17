@@ -1,0 +1,41 @@
+.grid-data {
+  table-layout: fixed;
+  height: 100%;
+  position: relative;
+}
+
+.grid-data td,
+.grid-data th {
+  border: 1px solid #f00;
+}
+
+.grid-data thead tr,
+.grid-data tfoot tr {
+  display: block;
+  /* width: calc(100% - 15px); */
+}
+
+.grid-data tr {
+  /* border: 1px solid #00f; */
+  width: 100%;
+}
+.grid-data tbody {
+  display: block;
+  width: 100%;
+  height: calc(100% - 50px);
+  /* overflow: auto; */
+}
+
+/* .scroll-thumb {
+  position: absolute;
+  height: 80%;
+  width: 10px;
+  background-color: #00f;
+  top: 30px;
+  right: 5px;
+  left: auto;
+} */
+
+.grid-data-wrapper {
+  border-radius: 5px;
+}

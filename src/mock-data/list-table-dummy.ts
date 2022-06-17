@@ -1,5 +1,5 @@
 export const tableDummies = [
-  ['Menjadi lebih baik itu tidak mudah', 'Perlu Perjuangan yang sangat besar', '1'],
+  ['Menjadi lebih baik itu tidak mudah Menjadi lebih baik itu tidak mudahMenjadi lebih baik itu tidak mudah', 'Perlu Perjuangan yang sangat besar', '1'],
   [
     'Ku pernah terjatuh, ku pernah ditinggalan pupus cerita',
     'Maha Sempurna Tuhan kirimkan kau untuk ku kekasih yang tulus',
