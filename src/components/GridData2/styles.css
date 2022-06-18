@@ -1,38 +1,3 @@
-/* .grid-data {
-  table-layout: fixed;
-  height: 100%;
-  position: relative;
-}
-
-.grid-data td,
-.grid-data th {
-  border: 1px solid #f00;
-}
-
-.grid-data thead tr,
-.grid-data tfoot tr {
-  display: block;
-}
-
-.grid-data tr {
-  width: 100%;
-}
-.grid-data tbody {
-  display: block;
-  width: 100%;
-  height: calc(100% - 50px);
-} */
-
-/* .scroll-thumb {
-  position: absolute;
-  height: 80%;
-  width: 10px;
-  background-color: #00f;
-  top: 30px;
-  right: 5px;
-  left: auto;
-} */
-
 .dg {
   /* border: 1px solid #0f0; */
   height: calc(100%);
@@ -69,6 +34,7 @@
   border-collapse: collapse;
   box-sizing: border-box;
   height: 100%;
+  user-select: none;
   /* border: 1px solid #f00; */
 }
 

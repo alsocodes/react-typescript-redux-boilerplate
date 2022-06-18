@@ -3,12 +3,14 @@ import { IoSearch } from 'react-icons/io5';
 import { listKaryawan } from '../../mock-data/list-karyawan-dummy';
 import GridData2 from '../../components/GridData2';
 import './styles.css';
+import useKeyOrMouseEvent from './useKeyOrMouseEvent';
 
-const initState = 3;
+const colPosInit = { x: 0, y: 0 };
 const Surat = (): JSX.Element => {
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
   const [skip, setSkip] = useState(0);
+  const [currentData, setCurrentData] = useState(null);
 
   const [totalData, setTotalData] = useState(listKaryawan.length);
   const [listData, setListData] = useState([]);
@@ -20,8 +22,7 @@ const Surat = (): JSX.Element => {
   useEffect(() => {
     // disini adalah mock search data. nanti fetch ke api
     const filterOrSearched = listKaryawan.filter((item: any, i: number) => {
-      if (!item.name.toLowerCase().includes(searchValue) && searchValue !== '')
-        return false;
+      if (!item.name.toLowerCase().includes(searchValue) && searchValue !== '') return false;
       return true;
     }, []);
 
@@ -34,61 +35,6 @@ const Surat = (): JSX.Element => {
       }),
     );
   }, [skip, perPage, searchValue]);
-
-  useEffect(() => {
-    console.log('listData', listData.length);
-  }, [listData]);
-
-  // ----------------------event keyboard---------------------------------
-  const gridDataRef = useRef<HTMLDivElement>(null);
-  // const [rowSelectedIndex, setRowSelectedIndex] = useState(3);
-
-  const reducer = (state: any, action: any) => {
-    // console.log('isLabel', isLabel, action.type);
-    switch (action.type) {
-      case 'arrowUp':
-        return state > 0 ? state - 1 : listData.length - 1;
-
-      case 'arrowDown':
-        return state < listData.length - 1 ? state + 1 : 0;
-
-      case 'select':
-        return action.payload;
-      default:
-        throw new Error();
-    }
-  };
-
-  const [state, dispatch] = useReducer(reducer, initState);
-
-  useEffect(() => {
-    if (gridDataRef.current !== null) {
-      // console.log('i am focused');
-      const el = gridDataRef.current;
-
-      const handleKeydown = (e: KeyboardEvent) => {
-        console.log(`i am key down ${e.key}`);
-      };
-
-      const handleClick = (e: MouseEvent) => {
-        console.log(`i am clicked`, e.target);
-        el.focus();
-        if (e.target !== null) {
-          if (e.target.classList.contains('dg-body-col')) {
-            console.log(e.target.parentNode.getAttribute('id'));
-          }
-        }
-      };
-
-      el.addEventListener('keydown', handleKeydown);
-      el.addEventListener('click', handleClick);
-
-      return () => {
-        el.removeEventListener('keydown', handleKeydown);
-        el.removeEventListener('click', handleClick);
-      };
-    }
-  }, [gridDataRef]);
 
   const cols: any = [
     {
@@ -114,12 +60,102 @@ const Surat = (): JSX.Element => {
     return () => clearTimeout(timer);
   }, [searchInput]);
 
+  // ----------------------event keyboard---------------------------------
+  const gridDataRef = useRef<HTMLDivElement>(null);
+  const reducer = (state: any, action: any) => {
+    // console.log('isLabel', isLabel, action.type);
+    const lenX = cols.length - 1;
+    const lenY = listData.length - 1;
+    const x = state.x;
+    const y = state.y;
+
+    if (action.type === 'ArrowUp') {
+      return { ...state, y: y > 0 ? y - 1 : 0 };
+    }
+    if (action.type === 'ArrowDown') {
+      return { ...state, y: y < lenY ? y + 1 : lenY };
+    }
+    if (action.type === 'ArrowRight') {
+      const px = x < lenX ? x + 1 : y < lenY ? 0 : x;
+      const py = x === lenX && y < lenY ? y + 1 : y;
+      return { ...state, x: px, y: py };
+    }
+    if (action.type === 'ArrowLeft') {
+      const px = x > 0 ? x - 1 : y > 0 ? lenX : x;
+      const py = x === 0 && y > 0 ? y - 1 : y;
+      return { ...state, x: px, y: py };
+    }
+
+    if (action.type === 'dblclick') {
+      return {
+        ...state,
+        x: action.x,
+        y: action.y,
+      };
+    }
+
+    throw new Error();
+  };
+
+  const [position, setPosition] = useReducer(reducer, colPosInit);
+  const arrowUpPressed = useKeyOrMouseEvent('ArrowUp', gridDataRef);
+  const arrowDownPressed = useKeyOrMouseEvent('ArrowDown', gridDataRef);
+  const arrowLeftPressed = useKeyOrMouseEvent('ArrowLeft', gridDataRef);
+  const arrowRightPressed = useKeyOrMouseEvent('ArrowRight', gridDataRef);
+  const enterPressed = useKeyOrMouseEvent('Enter', gridDataRef);
+
+  const onEnterOrDblClick = (x: number, y: number) => {
+    setCurrentData(listData[y]);
+  };
+
+  useEffect(() => {
+    if (arrowUpPressed) setPosition({ type: 'ArrowUp' });
+  }, [arrowUpPressed]);
+
+  useEffect(() => {
+    if (arrowDownPressed) setPosition({ type: 'ArrowDown' });
+  }, [arrowDownPressed]);
+
+  useEffect(() => {
+    if (arrowLeftPressed) setPosition({ type: 'ArrowLeft' });
+  }, [arrowLeftPressed]);
+
+  useEffect(() => {
+    if (arrowRightPressed) setPosition({ type: 'ArrowRight' });
+  }, [arrowRightPressed]);
+
+  useEffect(() => {
+    if (enterPressed) onEnterOrDblClick(position.x, position.y);
+  }, [enterPressed]);
+
+  useEffect(() => {
+    if (gridDataRef.current === null) return;
+    const el = gridDataRef.current;
+    const handleDblClick = (e: MouseEvent) => {
+      el.focus();
+      if (e.target !== null) {
+        if (e.target.classList.contains('dg-body-col')) {
+          const y = parseInt(e.target.parentNode.getAttribute('pos-y'));
+          const x = parseInt(e.target.getAttribute('pos-x'));
+          setPosition({ type: 'dblclick', x: x, y: y });
+          onEnterOrDblClick(x, y);
+        }
+      }
+    };
+
+    el.addEventListener('dblclick', handleDblClick);
+
+    return () => {
+      el.removeEventListener('click', handleDblClick);
+    };
+  }, [gridDataRef, listData]);
+
   return (
     <div className="p-4">
       <div className="flex">
         <div className="w-8/12 relative" style={{ height: 'calc(100vh -100px)' }}>
           <div className="form-area h-4/6 px-2 pt-2 w-full">
-            <div className="h-full w-full border border-green-500">a</div>
+            <div className="h-full w-full border border-primary rounded-box">{JSON.stringify(currentData)}</div>
           </div>
           <div className="data-area h-2/6 px-2 pt-2 w-full">
             <div className="w-full h-full border bg-gray-100 border-gray-300 p-2 rounded-md">
@@ -128,34 +164,18 @@ const Surat = (): JSX.Element => {
                   <div className="form-control w-full">
                     <div className="relative">
                       <IoSearch className="absolute z-10 ml-2 my-3 -top-1" />
-                      <input
-                        value={searchInput}
-                        onChange={(e) => setSearchInput(e.target.value)}
-                        type="text"
-                        placeholder="Pencarian"
-                        className="input w-full input-sm pl-8 border border-gray-300"
-                      />
+                      <input value={searchInput} onChange={(e) => setSearchInput(e.target.value)} type="text" placeholder="Pencarian" className="input w-full input-sm pl-8 border border-gray-300" />
                     </div>
                   </div>
                 </div>
                 <div className="w-4/12">
                   <div className="w-full flex gap-2 items-center">
                     <div className="form-control w-2/4">
-                      <input
-                        name="date_start"
-                        type="date"
-                        placeholder="DD/MM/YYYY"
-                        className="input w-full input-sm border border-gray-300"
-                      />
+                      <input name="date_start" type="date" placeholder="DD/MM/YYYY" className="input w-full input-sm border border-gray-300" />
                     </div>
                     <div>-</div>
                     <div className="form-control w-2/4">
-                      <input
-                        name="date_end"
-                        type="date"
-                        placeholder="DD/MM/YYYY"
-                        className="input w-full input-sm border border-gray-300"
-                      />
+                      <input name="date_end" type="date" placeholder="DD/MM/YYYY" className="input w-full input-sm border border-gray-300" />
                     </div>
                   </div>
                 </div>
@@ -165,22 +185,8 @@ const Surat = (): JSX.Element => {
                   </div>
                 </div>
               </div>
-              <div
-                tabIndex={0}
-                ref={gridDataRef}
-                className="grid-data-ref overflow-hidden text-sm2 gray-500 border"
-                style={{ height: 'calc(100% - 40px)' }}>
-                <GridData2
-                  data={listData}
-                  cols={cols}
-                  page={page}
-                  perPage={perPage}
-                  skip={skip}
-                  totalData={totalData}
-                  setPage={setPage}
-                  setPerPage={setPerPage}
-                  rowSelectedIndex={state}
-                />
+              <div tabIndex={0} ref={gridDataRef} className="grid-data-ref overflow-hidden text-sm2 gray-500 border" style={{ height: 'calc(100% - 40px)' }}>
+                <GridData2 data={listData} cols={cols} page={page} perPage={perPage} skip={skip} totalData={totalData} setPage={setPage} setPerPage={setPerPage} pos={position} />
               </div>
             </div>
           </div>
