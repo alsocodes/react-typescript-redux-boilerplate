@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { IoSearch, IoCalendar } from 'react-icons/io5';
+import React, { useEffect, useReducer, useRef, useState } from 'react';
+import { IoSearch } from 'react-icons/io5';
 import { listKaryawan } from '../../mock-data/list-karyawan-dummy';
-import { tableDummies } from '../../mock-data/list-table-dummy';
-import GridData from '../../components/GridData';
-import CustomScrollbar from '../../components/CustomScrollbar';
 import GridData2 from '../../components/GridData2';
+import './styles.css';
 
+const initState = 3;
 const Surat = (): JSX.Element => {
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
@@ -14,7 +13,6 @@ const Surat = (): JSX.Element => {
   const [totalData, setTotalData] = useState(listKaryawan.length);
   const [listData, setListData] = useState([]);
   const [searchValue, setSearchValue] = useState('');
-
   useEffect(() => {
     setSkip((page - 1) * perPage);
   }, [page, perPage]);
@@ -31,19 +29,66 @@ const Surat = (): JSX.Element => {
 
     setListData(
       filterOrSearched.filter((item: any, i: number) => {
-        if (!item.name.toLowerCase().includes(searchValue) && searchValue !== '')
-          return false;
-        if (i < skip && i >= skip + perPage) return false;
-        // i >= skip && i < skip + perPage
-
+        if (i < skip || i >= skip + perPage) return false;
         return true;
       }),
     );
   }, [skip, perPage, searchValue]);
 
   useEffect(() => {
-    // console.log('listData', listData);
+    console.log('listData', listData.length);
   }, [listData]);
+
+  // ----------------------event keyboard---------------------------------
+  const gridDataRef = useRef<HTMLDivElement>(null);
+  // const [rowSelectedIndex, setRowSelectedIndex] = useState(3);
+
+  const reducer = (state: any, action: any) => {
+    // console.log('isLabel', isLabel, action.type);
+    switch (action.type) {
+      case 'arrowUp':
+        return state > 0 ? state - 1 : listData.length - 1;
+
+      case 'arrowDown':
+        return state < listData.length - 1 ? state + 1 : 0;
+
+      case 'select':
+        return action.payload;
+      default:
+        throw new Error();
+    }
+  };
+
+  const [state, dispatch] = useReducer(reducer, initState);
+
+  useEffect(() => {
+    if (gridDataRef.current !== null) {
+      // console.log('i am focused');
+      const el = gridDataRef.current;
+
+      const handleKeydown = (e: KeyboardEvent) => {
+        console.log(`i am key down ${e.key}`);
+      };
+
+      const handleClick = (e: MouseEvent) => {
+        console.log(`i am clicked`, e.target);
+        el.focus();
+        if (e.target !== null) {
+          if (e.target.classList.contains('dg-body-col')) {
+            console.log(e.target.parentNode.getAttribute('id'));
+          }
+        }
+      };
+
+      el.addEventListener('keydown', handleKeydown);
+      el.addEventListener('click', handleClick);
+
+      return () => {
+        el.removeEventListener('keydown', handleKeydown);
+        el.removeEventListener('click', handleClick);
+      };
+    }
+  }, [gridDataRef]);
 
   const cols: any = [
     {
@@ -121,7 +166,9 @@ const Surat = (): JSX.Element => {
                 </div>
               </div>
               <div
-                className="overflow-hidden text-sm border-0 border-purple-900"
+                tabIndex={0}
+                ref={gridDataRef}
+                className="grid-data-ref overflow-hidden text-sm2 gray-500 border"
                 style={{ height: 'calc(100% - 40px)' }}>
                 <GridData2
                   data={listData}
@@ -132,6 +179,7 @@ const Surat = (): JSX.Element => {
                   totalData={totalData}
                   setPage={setPage}
                   setPerPage={setPerPage}
+                  rowSelectedIndex={state}
                 />
               </div>
             </div>

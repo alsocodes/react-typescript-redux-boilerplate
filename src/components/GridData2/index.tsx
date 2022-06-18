@@ -16,6 +16,7 @@ type Props = {
   totalData: number;
   setPage(number: number): void;
   setPerPage(number: number): void;
+  rowSelectedIndex: number;
 };
 const GridData2: FC<Props> = ({
   pdHeader,
@@ -30,6 +31,7 @@ const GridData2: FC<Props> = ({
   totalData,
   setPage,
   setPerPage,
+  rowSelectedIndex,
 }): JSX.Element => {
   // const [gdData, setGdData] = useState([]);
 
@@ -112,9 +114,19 @@ const GridData2: FC<Props> = ({
       <div className="dg-body text-sm">
         <CustomScrollbar>
           {gdData.map((item: any, i: number) => {
-            const bg = i % 2 !== 0 ? 'bg-gray-200' : 'bg-white';
+            const bg =
+              rowSelectedIndex === i
+                ? 'bg-gray-300'
+                : i % 2 !== 0
+                ? 'bg-gray-200'
+                : 'bg-white';
+
+            const border = rowSelectedIndex === i ? 'border border-gray-500' : '';
             return (
-              <div key={`row-${i}`} className={`dg-body-row ${bg} hover:bg-gray-300`}>
+              <div
+                key={`row-${i}`}
+                className={`dg-body-row ${bg} hover:bg-gray-300 ${border}`}
+                id={item.id}>
                 {tCols?.map((col: any, x: number) => {
                   const { width, label, left, name, render } = col;
                   return (
